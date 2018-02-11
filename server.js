@@ -16,11 +16,18 @@ app.use(favicon(__dirname + '/public/favicon.ico'))
 io.on('connection', function(socket){
 	console.log('A user connected');
 	socket.on('disconnect', function(){
-		console.log('User disconnected');
+		if(users_list.includes(socket.name))
+			users_list.splice(users_list.indexOf(socket.name), 1);
+		socket.broadcast.emit('new_users_list', users_list);
+		socket.broadcast.emit('user_left', socket.name);
 	});
 
 	socket.on('new_user', function(name){
 		add_new_user(socket, name)
+	});
+
+	socket.on('new_message', function(new_msg) {
+		socket.broadcast.emit('new_message', {name: socket.name, msg: new_msg});
 	});
 
 
@@ -29,6 +36,9 @@ io.on('connection', function(socket){
 const port = process.env.PORT || 8080;
 http.listen(port);
 
+
+
+
 function add_new_user(socket, name) {
 	var incorrect_message = check_name(name);
 	if(incorrect_message)
@@ -36,9 +46,10 @@ function add_new_user(socket, name) {
 	else {
 		socket.name = name;
 		users_list.push(name);
-		console.log(users_list);
+		users_list.sort();
 		socket.emit('new_users_list', users_list);
 		socket.broadcast.emit('new_users_list', users_list);
+		socket.broadcast.emit('user_joined', socket.name);
 	}
 }
 
