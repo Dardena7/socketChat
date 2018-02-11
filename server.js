@@ -6,4 +6,5 @@ app.get('/', function(req, res) {
 	res.render('chat.ejs');
 });
 
-app.listen(8080);
+const port = process.env.PORT || 4000;
+app.listen(port);
