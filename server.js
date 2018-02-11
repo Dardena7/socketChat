@@ -1,8 +1,13 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var favicon = require('serve-favicon');
 
-app.get('/', function(req, res) {
+
+app.use(favicon(__dirname + '/public/favicon.ico'))
+
+.get('/', function(req, res) {
+	console.log(__dirname);
 	res.render('chat.ejs');
 });
 
