@@ -2,14 +2,141 @@
 <html>
 <head>
 	<title>My Chat 3.0</title>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+	<style type="text/css">
+		* {
+			padding: 0px;
+			margin: 0px;
+		}
+
+		body {
+			font-size: 14px;
+			padding: 1em;
+			background-color: #444;
+			color: white;
+		}
+
+		h1, h2 {
+			width: 100%;
+		}
+
+
+		h1 {
+			text-align: center;
+		}
+
+		.messages {
+			height: 400px;
+			padding: 0em 1em;
+			overflow-y: scroll;
+			border-radius: 5px;
+			border: 5px solid lightblue;
+			margin-bottom: 2em;
+			color: #444;
+			background-color: white;
+		}
+
+		ul {
+			list-style: none;
+		}
+
+		input {
+			border: 2px solid lightblue;
+			border-radius: 2px;
+			color: #444;
+		}
+
+		button {
+			margin-top: 1em;
+			margin-bottom: 2em;
+		}
+
+		.users {
+			height: 200px;
+			padding: 0em 1em;
+			overflow-y: scroll;
+			border-radius: 5px;
+			border: 5px solid lightblue;
+			margin-bottom: 1em;
+			color: #444;
+			background-color: white;
+		}
+
+	</style>
 </head>
 <body>
+	<div class='container'>
+		<h1>Bienvenue sur le chat 3.0 !</h1>
+		
+		<div class='row'>
+			<h2>Liste des messages</h2>
+			<section class="col-12 messages">
+				<ul id='messages-list'>
+					<li>desktop publishing software zoals Aldus PageMaker die versies van Lorem Ipsum bevatten.</li>
+					<li>desktop publishing software zoals Aldus PageMaker die versies van Lorem Ipsum bevatten.</li>
+					<li>overgenomen in elektronische letterzetting. Het is in de jaren '60 populair geworden met de introductie van Letraset vellen met Lorem Ipsum passages en meer recentelijk door desktop publishing software zoals Aldus PageMaker die versies van Lorem Ipsum bevatten.</li>
+					<li>desktop publishing software zoals Aldus PageMaker die versies van Lorem Ipsum bevatten.</li>
+					<!-- List of sent messages -->
+				</ul>
+			</section>
+			<h2>Envoyer un message</h2>
+			<input class="col-12" type="text" name="send-message" id="send-message" autofocus>
+			<button class="btn btn-primary">Envoyer</button>
+		</div>
 
-	<h1>Bienvenue sur le chat 3.0 !</h1>
+		<div class='row'>
+			<h2>Liste des participants</h2>
+			<section class="col-12 col-sm-6 col-md-4 col-xl-3  users">
+				<ul id='users-list'>
+					<!-- Users connected -->
+				</ul>
+			</section>	
+		</div>
+		
+	</div>
 
-<script src='/socket.io/socket.io.js'></script>
-<script>
-	var socket = io();
-</script>
+	<!-- Optional JavaScript -->
+	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+	<script src='/socket.io/socket.io.js'></script>
+	<script>
+		var socket = io();
+		ask_name('');
+
+		socket.on('bad_name', function(msg){
+			ask_name(msg);
+		});
+
+		socket.on('new_users_list', function(users_list){
+			console.log(users_list);
+			var list = "";
+			for(var i = 0; i < users_list.length; ++i)
+				list += "<li>"+users_list[i]+"</li>";
+			$('#users-list').html(list);
+		});
+
+		$('#send-message').on('click', function() {
+			socket.emit('new_message', $(this).val());
+			$(this).val() = '';
+		});
+
+		function ask_name(msg) {
+			if(msg == '')
+				msg = 'Veuillez choisir un pseudo.';
+			else
+				msg = msg + ' Veuillez choisir un autre pseudo.';
+			var user_name = prompt(msg);
+			socket.emit('new_user', user_name);
+		}
+	</script>
+
 </body>
 </html>
