@@ -124,7 +124,8 @@
 		});
 
 		$('#send-message').on('click', function() {
-			socket.emit('new_message', $(this).val());
+			var msg = $(this).val();
+			console.log(msg);
 			$(this).val() = '';
 		});
 
