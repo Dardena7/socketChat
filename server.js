@@ -55,7 +55,9 @@ function add_new_user(socket, name) {
 
 function check_name(name) {
 	var incorrect = false;
-	if(users_list.includes(name))
+	if(name == null || typeof(name) == 'undefined')
+		incorrect = 'Le pseudo n\'est pas valide !';
+	else if(users_list.includes(name))
 		incorrect = 'Le pseudo est déjà utilisé !';
 	else if(name.length < 4)
 		incorrect = 'Le pseudo est trop court !';
